@@ -1,23 +1,20 @@
-#include <list>
-#include <mutex>
-#include <shared_mutex>
-#include <string>
-#include <unordered_map>
+#pragma once
 
-class DNSCache {
-private:
-  struct CacheEntry {
-    std::string ip;
-    std::list<std::string>::iterator lru_iterator;
-  };
+#include "dns_cache_base.h"
 
-  size_t max_size_;
-  std::unordered_map<std::string, CacheEntry> cache_;
-  std::list<std::string> lru_list_;
-  mutable std::shared_mutex mutex_;
-
+class DNSCache : public DNSCacheBase {
 public:
-  explicit DNSCache(size_t max_size);
-  void update(const std::string &name, const std::string &ip);
-  std::string resolve(const std::string &name);
+  static DNSCache& getInstance(size_t max_size = 1000) {
+    static DNSCache instance(max_size);
+    return instance;
+  }
+
+  // Prevent copying and assignment
+  DNSCache(const DNSCache &) = delete;
+  DNSCache &operator=(const DNSCache &) = delete;
+  DNSCache(DNSCache &&) = delete;
+  DNSCache &operator=(DNSCache &&) = delete;
+
+private:
+  explicit DNSCache(size_t max_size) : DNSCacheBase(max_size) {}
 };

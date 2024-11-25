@@ -1,8 +1,9 @@
-#include "../include/dns_cache.h"
+#include "../include/dns_cache_base.h"
+#include <mutex>
 
-DNSCache::DNSCache(size_t max_size) : max_size_(max_size) {}
+DNSCacheBase::DNSCacheBase(size_t max_size) : max_size_(max_size) {}
 
-void DNSCache::update(const std::string &name, const std::string &ip) {
+void DNSCacheBase::update(const std::string &name, const std::string &ip) {
   std::unique_lock<std::shared_mutex> lock(mutex_);
 
   auto it = cache_.find(name);
@@ -25,7 +26,7 @@ void DNSCache::update(const std::string &name, const std::string &ip) {
   }
 }
 
-std::string DNSCache::resolve(const std::string &name) {
+std::string DNSCacheBase::resolve(const std::string &name) {
   std::unique_lock<std::shared_mutex> lock(mutex_);
 
   auto it = cache_.find(name);
@@ -38,3 +39,5 @@ std::string DNSCache::resolve(const std::string &name) {
   }
   return "";
 }
+
+size_t DNSCacheBase::getMaxSize() const { return max_size_; }
