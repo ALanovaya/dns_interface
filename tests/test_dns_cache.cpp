@@ -96,22 +96,22 @@ TEST(DNSCacheTest, ConcurrentReadsAndWrites) {
   DNSCacheTestable cache(1000);
   std::vector<std::thread> threads;
 
-  auto write_func = [&cache](int start, int end) {
+  auto update_func = [&cache](int start, int end) {
     for (int i = start; i < end; ++i) {
       cache.update("site" + std::to_string(i) + ".com",
                    "1.1.1." + std::to_string(i));
     }
   };
 
-  auto read_func = [&cache](int start, int end) {
+  auto resolve_func = [&cache](int start, int end) {
     for (int i = start; i < end; ++i) {
       cache.resolve("site" + std::to_string(i) + ".com");
     }
   };
 
   for (int i = 0; i < 4; ++i) {
-    threads.emplace_back(write_func, i * 250, (i + 1) * 250);
-    threads.emplace_back(read_func, i * 250, (i + 1) * 250);
+    threads.emplace_back(resolve_func, i * 250, (i + 1) * 250);
+    threads.emplace_back(update_func, i * 250, (i + 1) * 250);
   }
 
   for (auto &thread : threads) {
