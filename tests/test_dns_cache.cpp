@@ -7,25 +7,25 @@
 #include "../include/dns_cache_testable.h"
 
 TEST(DNSCacheTest, EmptyCache) {
-  DNSCacheTestable cache(5);
+  test::DNSCacheTestable cache(5);
   EXPECT_EQ(cache.resolve("example.com"), "");
 }
 
 TEST(DNSCacheTest, AddAndResolve) {
-  DNSCacheTestable cache(5);
+  test::DNSCacheTestable cache(5);
   cache.update("example.com", "192.168.1.1");
   EXPECT_EQ(cache.resolve("example.com"), "192.168.1.1");
 }
 
 TEST(DNSCacheTest, UpdateExisting) {
-  DNSCacheTestable cache(5);
+  test::DNSCacheTestable cache(5);
   cache.update("example.com", "192.168.1.1");
   cache.update("example.com", "192.168.1.2");
   EXPECT_EQ(cache.resolve("example.com"), "192.168.1.2");
 }
 
 TEST(DNSCacheTest, LRUEviction) {
-  DNSCacheTestable cache(3);
+  test::DNSCacheTestable cache(3);
   cache.update("site1.com", "1.1.1.1");
   cache.update("site2.com", "2.2.2.2");
   cache.update("site3.com", "3.3.3.3");
@@ -38,7 +38,7 @@ TEST(DNSCacheTest, LRUEviction) {
 }
 
 TEST(DNSCacheTest, LRUOrder) {
-  DNSCacheTestable cache(3);
+  test::DNSCacheTestable cache(3);
   cache.update("site1.com", "1.1.1.1");
   cache.update("site2.com", "2.2.2.2");
   cache.update("site3.com", "3.3.3.3");
@@ -54,7 +54,7 @@ TEST(DNSCacheTest, LRUOrder) {
 }
 
 TEST(DNSCacheTest, MaxSizeRespected) {
-  DNSCacheTestable cache(1000);
+  test::DNSCacheTestable cache(1000);
   for (int i = 0; i < 2000; ++i) {
     cache.update("site" + std::to_string(i) + ".com",
                  "1.1.1." + std::to_string(i));
@@ -69,7 +69,7 @@ TEST(DNSCacheTest, MaxSizeRespected) {
 }
 
 TEST(DNSCacheTest, ConcurrentAccess) {
-  DNSCacheTestable cache(1000);
+  test::DNSCacheTestable cache(1000);
   std::vector<std::thread> threads;
 
   for (int i = 0; i < 10; ++i) {
@@ -93,7 +93,7 @@ TEST(DNSCacheTest, ConcurrentAccess) {
 }
 
 TEST(DNSCacheTest, ConcurrentReadsAndWrites) {
-  DNSCacheTestable cache(1000);
+  test::DNSCacheTestable cache(1000);
   std::vector<std::thread> threads;
 
   auto update_func = [&cache](int start, int end) {
@@ -128,7 +128,7 @@ TEST(DNSCacheTest, ConcurrentReadsAndWrites) {
 }
 
 TEST(DNSCacheTest, ConcurrentUpdates) {
-  DNSCacheTestable cache(100);
+  test::DNSCacheTestable cache(100);
   std::vector<std::thread> threads;
 
   auto update_func = [&cache]() {
@@ -161,7 +161,7 @@ TEST(DNSCacheTest, ConcurrentUpdates) {
 }
 
 TEST(DNSCacheTest, ConcurrentReadsWithTimeouts) {
-  DNSCacheTestable cache(100);
+  test::DNSCacheTestable cache(100);
   std::vector<std::thread> threads;
 
   for (int i = 0; i < 100; ++i) {
@@ -201,7 +201,7 @@ TEST(DNSCacheTest, ConcurrentReadsWithTimeouts) {
 }
 
 TEST(DNSCacheTest, StressTest) {
-  DNSCacheTestable cache(10000);
+  test::DNSCacheTestable cache(10000);
   std::vector<std::thread> threads;
 
   auto stress_func = [&cache]() {
