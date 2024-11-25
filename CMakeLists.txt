@@ -14,9 +14,5 @@ add_executable(dns_cache_test
 
 target_include_directories(dns_cache_test PRIVATE include)
 
-target_link_libraries(dns_cache_test GTest::GTest GTest::Main pthread)
-
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_options(dns_cache_test PRIVATE -fsanitize=thread)
-    target_link_libraries(dns_cache_test -fsanitize=thread)
-endif()
+target_compile_options(dns_cache_test PRIVATE -fsanitize=thread)
+target_link_libraries(dns_cache_test -fsanitize=thread GTest::GTest GTest::Main pthread)
