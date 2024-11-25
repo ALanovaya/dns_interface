@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package(GTest REQUIRED)
 
 add_executable(dns_cache_test 
-    src/dns_cache.cpp
+    src/dns_cache_base.cpp
+    tests/test_dns_cache_singleton.cpp
     tests/test_dns_cache.cpp
 )
 
