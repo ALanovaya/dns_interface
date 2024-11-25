@@ -169,7 +169,7 @@ TEST(DNSCacheTest, ConcurrentReadsWithTimeouts) {
                  "1.1.1." + std::to_string(i));
   }
 
-  auto read_func = [&cache]() {
+  auto resolve_func = [&cache]() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, 99);
@@ -184,7 +184,7 @@ TEST(DNSCacheTest, ConcurrentReadsWithTimeouts) {
   };
 
   for (int i = 0; i < 20; ++i) {
-    threads.emplace_back(read_func);
+    threads.emplace_back(resolve_func);
   }
 
   for (auto &thread : threads) {
