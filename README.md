@@ -27,12 +27,7 @@
    cmake -B build -S .
    cmake --build build
    ```
-    Для сборки в Debug:
-    ```bash
-    cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug
-    cmake --build build
-     ```
-    В Debug проект компилируется с флагом санитайзера ```-fsanitize=thread```
+    Проект компилируется с флагом санитайзера ```-fsanitize=thread```
 
 4. Запустить тесты:
    ```bash
