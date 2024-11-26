@@ -20,8 +20,11 @@ void DNSCacheBase::update(const std::string &name, const std::string &ip) {
       cache_.erase(lru_name);
       lru_list_.pop_back();
     }
-    lru_list_.push_front(name);
-    cache_[name] = {ip, lru_list_.begin()};
+    auto [cache_it, inserted] = cache_.emplace(name, CacheEntry{ip, {}});
+
+    lru_list_.push_front(std::cref(cache_it->first));
+
+    cache_it->second.lru_iterator = lru_list_.begin();
   }
 }
 

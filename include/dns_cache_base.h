@@ -4,17 +4,18 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <functional> 
 
 class DNSCacheBase {
 private:
   struct CacheEntry {
     std::string ip;
-    std::list<std::string>::iterator lru_iterator;
+    std::list<std::reference_wrapper<const std::string>>::iterator lru_iterator;
   };
 
   size_t max_size_;
   std::unordered_map<std::string, CacheEntry> cache_;
-  std::list<std::string> lru_list_;
+  std::list<std::reference_wrapper<const std::string>> lru_list_;
   mutable std::mutex mutex_;
 
 protected:
