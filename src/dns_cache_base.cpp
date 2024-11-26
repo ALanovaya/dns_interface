@@ -4,15 +4,14 @@
 DNSCacheBase::DNSCacheBase(size_t max_size) : max_size_(max_size) {}
 
 void DNSCacheBase::update(const std::string &name, const std::string &ip) {
-  std::unique_lock<std::shared_mutex> lock(mutex_);
+  std::unique_lock<std::mutex> lock(mutex_);
 
   auto it = cache_.find(name);
   if (it != cache_.end()) {
     // Update existing entry
     it->second.ip = ip;
-    lru_list_.erase(it->second.lru_iterator);
-    lru_list_.push_front(name);
-    it->second.lru_iterator = lru_list_.begin();
+    // Move the accessed entry to the front of LRU list
+    lru_list_.splice(lru_list_.begin(), lru_list_, it->second.lru_iterator);
   } else {
     // Add new entry
     if (cache_.size() >= max_size_) {
@@ -27,14 +26,12 @@ void DNSCacheBase::update(const std::string &name, const std::string &ip) {
 }
 
 std::string DNSCacheBase::resolve(const std::string &name) {
-  std::unique_lock<std::shared_mutex> lock(mutex_);
+  std::unique_lock<std::mutex> lock(mutex_);
 
   auto it = cache_.find(name);
   if (it != cache_.end()) {
     // Move the accessed entry to the front of LRU list
-    lru_list_.erase(it->second.lru_iterator);
-    lru_list_.push_front(name);
-    it->second.lru_iterator = lru_list_.begin();
+    lru_list_.splice(lru_list_.begin(), lru_list_, it->second.lru_iterator);
     return it->second.ip;
   }
   return "";
